@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Elwin Clark.index</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>CRM PRO System</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{background:#f4f6f9;font-family:Arial;}
+.dark-mode{background:#1e1e1e;color:white;}
+.dark-mode .card{background:#2c2c2c;color:white;}
+.dark-mode .sidebar{background:#111;}
+.sidebar{height:100vh;background:#0d6efd;color:white;padding:20px;}
+.sidebar a{color:white;display:block;padding:12px;text-decoration:none;}
+.sidebar a:hover{background:#084298;border-radius:6px;}
+.card{border:none;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,0.1);}
+.stat-card{text-align:center;padding:20px;}
+.section{display:none;}
+.section.active{display:block;}
+.profile-pic{width:90px;height:90px;border-radius:50%;object-fit:cover;}
+.star{font-size:24px;cursor:pointer;color:gray;}
+.star.checked{color:gold;}
+.mobile-view{font-size:0.9rem;}
+</style>
+
+</head>
+<body>
+
+<!-- LOGIN PAGE -->
+<div id="authSection" class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-4">
+      <div class="card p-4">
+        <h3 class="text-center">CRM Login</h3>
+        <input id="username" class="form-control mb-2" placeholder="Username">
+        <input id="password" type="password" class="form-control mb-3" placeholder="Password">
+        <button class="btn btn-primary w-100 mb-2" onclick="login()">Login</button>
+        <button class="btn btn-success w-100" onclick="register()">Register</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CRM APP -->
+<div id="crmApp" style="display:none;">
+  <div class="container-fluid">
+    <div class="row">
+
+      <!-- Sidebar -->
+      <div class="col-md-2 sidebar">
+        <h3>CRM PRO</h3>
+        <p id="loggedUserText"></p>
+        <a href="#" onclick="showSection('dashboard')"><i class="fa fa-chart-line"></i> Dashboard</a>
+        <a href="#" onclick="showSection('customers')"><i class="fa fa-users"></i> Customers</a>
+        <a href="#" onclick="showSection('contactManagement')"><i class="fa fa-address-book"></i> Contact Management</a>
+        <a href="#" onclick="showSection('salesAutomation')"><i class="fa fa-rocket"></i> Sales Force Automation</a>
+        <a href="#" onclick="showSection('marketingAutomation')"><i class="fa fa-bullhorn"></i> Marketing Automation</a>
+        <a href="#" onclick="showSection('customerSupport')"><i class="fa fa-headset"></i> Customer Service & Support</a>
+        <a href="#" onclick="showSection('analytics')"><i class="fa fa-chart-pie"></i> Analytics & Reporting</a>
+        <a href="#" onclick="showSection('integration')"><i class="fa fa-plug"></i> Integration Capabilities</a>
+        <a href="#" onclick="showSection('mobileAccess')"><i class="fa fa-mobile-alt"></i> Mobile Access</a>
+        <a href="#" onclick="toggleDarkMode()"><i class="fa fa-moon"></i> Dark Mode</a>
+        <a href="#" onclick="logout()"><i class="fa fa-sign-out"></i> Logout</a>
+      </div>
+
+      <!-- Main Content -->
+      <div class="col-md-10 p-4">
+
+        <!-- Dashboard -->
+        <div id="dashboard" class="section active">
+          <h2>Dashboard</h2>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>Total Customers</h5>
+                <h2 id="totalCustomers">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>5 Star Ratings</h5>
+                <h2 id="fiveStar">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>4 Star Ratings</h5>
+                <h2 id="fourStar">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>Low Ratings</h5>
+                <h2 id="lowRating">0</h2>
+              </div>
+            </div>
+          </div>
+          <br>
+          <canvas id="ratingChart"></canvas>
+        </div>
+
+        <!-- Customers -->
+        <div id="customers" class="section">
+          <h2>Add Customer</h2>
+          <div class="card p-4">
+            <div class="row">
+              <div class="col-md-4 text-center">
+                <img src="https://via.placeholder.com/120" id="preview" class="profile-pic">
+                <br><br>
+                <input type="file" class="form-control" onchange="loadPhoto(event)">
+              </div>
+              <div class="col-md-8">
+                <input id="name" class="form-control mb-2" placeholder="Customer Name">
+                <textarea id="notes" class="form-control mb-2" placeholder="Customer Notes"></textarea>
+                <label>Rating</label><br>
+                <span class="star" onclick="rate(1)">★</span>
+                <span class="star" onclick="rate(2)">★</span>
+                <span class="star" onclick="rate(3)">★</span>
+                <span class="star" onclick="rate(4)">★</span>
+                <span class="star" onclick="rate(5)">★</span>
+                <br><br>
+                <button class="btn btn-primary" onclick="saveCustomer()">Save Customer</button>
+              </div>
+            </div>
+          </div>
+          <h3 class="mt-4">Customer List</h3>
+          <input id="search" class="form-control mb-3" placeholder="Search Customer" onkeyup="loadCustomers()">
+          <div class="row" id="customer-list"></div>
+        </div>
+
+        <!-- Contact Management -->
+        <div id="contactManagement" class="section">
+          <h2>Contact Management</h2>
+          <div class="card p-4 mb-3">
+            <div class="row">
+              <div class="col-md-6">
+                <input id="contactName" class="form-control mb-2" placeholder="Name">
+                <input id="contactEmail" class="form-control mb-2" placeholder="Email">
+                <input id="contactPhone" class="form-control mb-2" placeholder="Phone">
+                <textarea id="contactNotes" class="form-control mb-2" placeholder="Notes"></textarea>
+                <button class="btn btn-primary" onclick="saveContact()">Save Contact</button>
+              </div>
+            </div>
+          </div>
+          <input id="searchContact" class="form-control mb-3" placeholder="Search Contact" onkeyup="loadContacts()">
+          <div class="row" id="contact-list"></div>
+        </div>
+
+        <!-- Sales Force Automation -->
+        <div id="salesAutomation" class="section">
+          <h2>Sales Force Automation</h2>
+          <div class="card p-4 mb-3">
+            <input id="dealCustomer" class="form-control mb-2" placeholder="Customer Name">
+            <input id="dealName" class="form-control mb-2" placeholder="Deal Name">
+            <input id="dealAmount" type="number" class="form-control mb-2" placeholder="Amount">
+            <select id="dealStatus" class="form-control mb-2">
+              <option value="Pending">Pending</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+            <button class="btn btn-primary" onclick="saveDeal()">Save Deal</button>
+          </div>
+          <input id="searchDeal" class="form-control mb-3" placeholder="Search Deals" onkeyup="loadDeals()">
+          <div class="row" id="deal-list"></div>
+        </div>
+
+        <!-- Marketing Automation -->
+        <div id="marketingAutomation" class="section">
+          <h2>Marketing Automation</h2>
+          <div class="card p-4 mb-3">
+            <input id="campaignName" class="form-control mb-2" placeholder="Campaign Name">
+            <textarea id="campaignDesc" class="form-control mb-2" placeholder="Description"></textarea>
+            <input type="date" id="campaignStart" class="form-control mb-2">
+            <input type="date" id="campaignEnd" class="form-control mb-2">
+            <select id="campaignStatus" class="form-control mb-2">
+              <option value="Active">Active</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <button class="btn btn-primary" onclick="saveCampaign()">Save Campaign</button>
+          </div>
+          <input id="searchCampaign" class="form-control mb-3" placeholder="Search Campaigns" onkeyup="loadCampaigns()">
+          <div class="row" id="campaign-list"></div>
+        </div>
+
+        <!-- Customer Service & Support -->
+        <div id="customerSupport" class="section">
+          <h2>Customer Service & Support</h2>
+          <div class="card p-4 mb-3">
+            <input id="ticketCustomer" class="form-control mb-2" placeholder="Customer Name">
+            <textarea id="ticketIssue" class="form-control mb-2" placeholder="Issue"></textarea>
+            <select id="ticketPriority" class="form-control mb-2">
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+            <select id="ticketStatus" class="form-control mb-2">
+              <option value="Open">Open</option>
+              <option value="Closed">Closed</option>
+            </select>
+            <button class="btn btn-primary" onclick="saveTicket()">Save Ticket</button>
+          </div>
+          <input id="searchTicket" class="form-control mb-3" placeholder="Search Tickets" onkeyup="loadTickets()">
+          <div class="row" id="ticket-list"></div>
+        </div>
+
+        <!-- Analytics & Reporting -->
+        <div id="analytics" class="section">
+          <h2>Analytics & Reporting</h2>
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>Total Deals</h5>
+                <h2 id="totalDeals">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>Total Campaigns</h5>
+                <h2 id="totalCampaigns">0</h2>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="card stat-card">
+                <h5>Open Tickets</h5>
+                <h2 id="openTickets">0</h2>
+              </div>
+            </div>
+          </div>
+          <canvas id="analyticsChart"></canvas>
+        </div>
+
+        <!-- Integration Capabilities -->
+        <div id="integration" class="section">
+          <h2>Integration Capabilities</h2>
+          <div class="card p-4">
+            <button class="btn btn-info mb-2" onclick="simulateIntegration('Slack')">Integrate Slack</button>
+            <button class="btn btn-info mb-2" onclick="simulateIntegration('Mailchimp')">Integrate Mailchimp</button>
+            <button class="btn btn-info mb-2" onclick="simulateIntegration('Google Sheets')">Integrate Google Sheets</button>
+          </div>
+        </div>
+
+        <!-- Mobile Access -->
+        <div id="mobileAccess" class="section">
+          <h2>Mobile Access</h2>
+          <button class="btn btn-secondary mb-2" onclick="toggleMobileView()">Toggle Mobile-Friendly View</button>
+          <div id="mobileView" class="mobile-view">
+            <h4>Customers</h4>
+            <div id="mobileCustomerList"></div>
+            <h4>Contacts</h4>
+            <div id="mobileContactList"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// General Functions
+let currentRating = 0;
+let mobileMode = false;
+
+function showSection(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+function register(){
+  let username = document.getElementById("username").value.trim();
+  let password = document.getElementById("password").value.trim();
+  if(username==="" || password===""){alert("Enter username & password"); return;}
+  let users = JSON.parse(localStorage.getItem("users"))||[];
+  if(users.find(u=>u.username===username)){alert("Username exists"); return;}
+  users.push({username,password});
+  localStorage.setItem("users",JSON.stringify(users));
+  alert("Registration successful!");
+  document.getElementById("username").value="";
+  document.getElementById("password").value="";
+}
+
+function login(){
+  let username = document.getElementById("username").value.trim();
+  let password = document.getElementById("password").value.trim();
+  let users = JSON.parse(localStorage.getItem("users"))||[];
+  let found = users.find(u=>u.username===username && u.password===password);
+  if(found){
+    localStorage.setItem("loggedUser", username);
+    document.getElementById("authSection").style.display="none";
+    document.getElementById("crmApp").style.display="block";
+    document.getElementById("loggedUserText").innerText="User: "+username;
+  } else { alert("Invalid login"); }
+}
+
+function logout(){
+  localStorage.removeItem("loggedUser");
+  document.getElementById("crmApp").style.display="none";
+  document.getElementById("authSection").style.display="block";
+}
+
+function toggleDarkMode(){
+  document.body.classList.toggle("dark-mode");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+}
+
+// Customers & Ratings
+function loadPhoto(event){ let reader=new FileReader(); reader.onload=function(e){document.getElementById("preview").src=e.target.result;}; reader.readAsDataURL(event.target.files[0]); }
+function rate(stars){ currentRating=stars; document.querySelectorAll(".star").forEach(s=>s.classList.remove("checked")); for(let i=0;i<stars;i++){document.querySelectorAll(".star")[i].classList.add("checked");} }
+function saveCustomer(){ 
+  let name=document.getElementById("name").value;
+  let notes=document.getElementById("notes").value;
+  let image=document.getElementById("preview").src;
+  if(!name){alert("Customer name required"); return;}
+  let customers=JSON.parse(localStorage.getItem("customers"))||[];
+  customers.push({name,notes,image,rating:currentRating});
+  localStorage.setItem("customers",JSON.stringify(customers));
+  document.getElementById("name").value="";
+  document.getElementById("notes").value="";
+  currentRating=0;
+  document.querySelectorAll(".star").forEach(s=>s.classList.remove("checked"));
+  loadCustomers();
+  updateDashboard();
+}
+function loadCustomers(){
+  let customers=JSON.parse(localStorage.getItem("customers"))||[];
+  let search=document.getElementById("search").value.toLowerCase();
+  let list=document.getElementById("customer-list");
+  list.innerHTML="";
+  customers.forEach((c,i)=>{if(!c.name.toLowerCase().includes(search)) return; let card=document.createElement("div"); card.className="col-md-4 mb-3"; card.innerHTML=`<div class="card p-3 text-center"><img src="${c.image}" class="profile-pic mx-auto"><h5>${c.name}</h5><p>${c.notes}</p><p>${"★".repeat(c.rating)}</p><button class="btn btn-warning btn-sm" onclick="editCustomer(${i})">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteCustomer(${i})">Delete</button></div>`; list.appendChild(card); });
+}
+function updateDashboard(){ 
+  let customers=JSON.parse(localStorage.getItem("customers"))||[];
+  document.getElementById("totalCustomers").innerText=customers.length;
+  let five=0,four=0,low=0;
+  customers.forEach(c=>{ if(c.rating==5) five++; else if(c.rating==4) four++; else low++; });
+  document.getElementById("fiveStar").innerText=five;
+  document.getElementById("fourStar").innerText=four;
+  document.getElementById("lowRating").innerText=low;
+  createChart(five,four,low);
+}
+function createChart(five,four,low){ 
+  let ctx=document.getElementById("ratingChart");
+  if(window.chart) window.chart.destroy();
+  window.chart=new Chart(ctx,{ type:"doughnut", data:{ labels:["5 Star","4 Star","Low Rating"], datasets:[{ data:[five,four,low], backgroundColor:["green","orange","red"] }] } });
+}
+
+// ---------------- CONTACT MANAGEMENT ----------------
+function saveContact(){
+  let name=document.getElementById("contactName").value.trim();
+  let email=document.getElementById("contactEmail").value.trim();
+  let phone=document.getElementById("contactPhone").value.trim();
+  let notes=document.getElementById("contactNotes").value.trim();
+  if(!name){alert("Contact name required"); return;}
+  let contacts=JSON.parse(localStorage.getItem("contacts"))||[];
+  contacts.push({name,email,phone,notes});
+  localStorage.setItem("contacts",JSON.stringify(contacts));
+  document.getElementById("contactName").value="";
+  document.getElementById("contactEmail").value="";
+  document.getElementById("contactPhone").value="";
+  document.getElementById("contactNotes").value="";
+  loadContacts();
+}
+function loadContacts(){
+  let contacts=JSON.parse(localStorage.getItem("contacts"))||[];
+  let search=document.getElementById("searchContact").value.toLowerCase();
+  let list=document.getElementById("contact-list"); list.innerHTML="";
+  contacts.forEach((c,i)=>{ if(!c.name.toLowerCase().includes(search)) return; let card=document.createElement("div"); card.className="col-md-4 mb-3"; card.innerHTML=`<div class="card p-3"><h5>${c.name}</h5><p>${c.email}</p><p>${c.phone}</p><p>${c.notes}</p><button class="btn btn-warning btn-sm" onclick="editContact(${i})">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteContact(${i})">Delete</button></div>`; list.appendChild(card); });
+}
+function editContact(index){ let contacts=JSON.parse(localStorage.getItem("contacts")); let c=contacts[index]; document.getElementById("contactName").value=c.name; document.getElementById("contactEmail").value=c.email; document.getElementById("contactPhone").value=c.phone; document.getElementById("contactNotes").value=c.notes; contacts.splice(index,1); localStorage.setItem("contacts",JSON.stringify(contacts)); loadContacts(); }
+function deleteContact(index){ if(confirm("Delete this contact?")){ let contacts=JSON.parse(localStorage.getItem("contacts")); contacts.splice(index,1); localStorage.setItem("contacts",JSON.stringify(contacts)); loadContacts(); } }
+
+// ---------------- SALES AUTOMATION ----------------
+function saveDeal(){ 
+  let customer=document.getElementById("dealCustomer").value.trim();
+  let name=document.getElementById("dealName").value.trim();
+  let amount=document.getElementById("dealAmount").value.trim();
+  let status=document.getElementById("dealStatus").value;
+  if(!customer||!name){alert("Customer & Deal required"); return;}
+  let deals=JSON.parse(localStorage.getItem("deals"))||[];
+  deals.push({customer,name,amount,status});
+  localStorage.setItem("deals",JSON.stringify(deals));
+  document.getElementById("dealCustomer").value=""; document.getElementById("dealName").value=""; document.getElementById("dealAmount").value="";
+  loadDeals(); updateAnalytics();
+}
+function loadDeals(){
+  let deals=JSON.parse(localStorage.getItem("deals"))||[];
+  let search=document.getElementById("searchDeal").value.toLowerCase();
+  let list=document.getElementById("deal-list"); list.innerHTML="";
+  deals.forEach((d,i)=>{ if(!d.name.toLowerCase().includes(search)&&!d.customer.toLowerCase().includes(search)) return;
+    let card=document.createElement("div"); card.className="col-md-4 mb-3"; card.innerHTML=`<div class="card p-3"><h5>${d.name}</h5><p>Customer: ${d.customer}</p><p>Amount: ${d.amount}</p><p>Status: ${d.status}</p><button class="btn btn-warning btn-sm" onclick="editDeal(${i})">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteDeal(${i})">Delete</button></div>`; list.appendChild(card);
+  });
+}
+function editDeal(index){ let deals=JSON.parse(localStorage.getItem("deals")); let d=deals[index]; document.getElementById("dealCustomer").value=d.customer; document.getElementById("dealName").value=d.name; document.getElementById("dealAmount").value=d.amount; document.getElementById("dealStatus").value=d.status; deals.splice(index,1); localStorage.setItem("deals",JSON.stringify(deals)); loadDeals(); }
+function deleteDeal(index){ if(confirm("Delete this deal?")){ let deals=JSON.parse(localStorage.getItem("deals")); deals.splice(index,1); localStorage.setItem("deals",JSON.stringify(deals)); loadDeals(); updateAnalytics(); } }
+
+// ---------------- MARKETING AUTOMATION ----------------
+function saveCampaign(){ 
+  let name=document.getElementById("campaignName").value.trim();
+  let desc=document.getElementById("campaignDesc").value.trim();
+  let start=document.getElementById("campaignStart").value;
+  let end=document.getElementById("campaignEnd").value;
+  let status=document.getElementById("campaignStatus").value;
+  if(!name){alert("Campaign name required"); return;}
+  let campaigns=JSON.parse(localStorage.getItem("campaigns"))||[];
+  campaigns.push({name,desc,start,end,status});
+  localStorage.setItem("campaigns",JSON.stringify(campaigns));
+  document.getElementById("campaignName").value=""; document.getElementById("campaignDesc").value=""; document.getElementById("campaignStart").value=""; document.getElementById("campaignEnd").value="";
+  loadCampaigns(); updateAnalytics();
+}
+function loadCampaigns(){ 
+  let campaigns=JSON.parse(localStorage.getItem("campaigns"))||[];
+  let search=document.getElementById("searchCampaign").value.toLowerCase();
+  let list=document.getElementById("campaign-list"); list.innerHTML="";
+  campaigns.forEach((c,i)=>{ if(!c.name.toLowerCase().includes(search)) return;
+    let card=document.createElement("div"); card.className="col-md-4 mb-3"; card.innerHTML=`<div class="card p-3"><h5>${c.name}</h5><p>${c.desc}</p><p>${c.start} - ${c.end}</p><p>Status: ${c.status}</p><button class="btn btn-warning btn-sm" onclick="editCampaign(${i})">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteCampaign(${i})">Delete</button></div>`; list.appendChild(card);
+  });
+}
+function editCampaign(index){ let campaigns=JSON.parse(localStorage.getItem("campaigns")); let c=campaigns[index]; document.getElementById("campaignName").value=c.name; document.getElementById("campaignDesc").value=c.desc; document.getElementById("campaignStart").value=c.start; document.getElementById("campaignEnd").value=c.end; document.getElementById("campaignStatus").value=c.status; campaigns.splice(index,1); localStorage.setItem("campaigns",JSON.stringify(campaigns)); loadCampaigns(); }
+function deleteCampaign(index){ if(confirm("Delete this campaign?")){ let campaigns=JSON.parse(localStorage.getItem("campaigns")); campaigns.splice(index,1); localStorage.setItem("campaigns",JSON.stringify(campaigns)); loadCampaigns(); updateAnalytics(); } }
+
+// ---------------- CUSTOMER SUPPORT ----------------
+function saveTicket(){ 
+  let customer=document.getElementById("ticketCustomer").value.trim();
+  let issue=document.getElementById("ticketIssue").value.trim();
+  let priority=document.getElementById("ticketPriority").value;
+  let status=document.getElementById("ticketStatus").value;
+  if(!customer||!issue){alert("Customer & Issue required"); return;}
+  let tickets=JSON.parse(localStorage.getItem("tickets"))||[];
+  tickets.push({customer,issue,priority,status});
+  localStorage.setItem("tickets",JSON.stringify(tickets));
+  document.getElementById("ticketCustomer").value=""; document.getElementById("ticketIssue").value="";
+  loadTickets(); updateAnalytics();
+}
+function loadTickets(){
+  let tickets=JSON.parse(localStorage.getItem("tickets"))||[];
+  let search=document.getElementById("searchTicket").value.toLowerCase();
+  let list=document.getElementById("ticket-list"); list.innerHTML="";
+  tickets.forEach((t,i)=>{ if(!t.customer.toLowerCase().includes(search)) return; let card=document.createElement("div"); card.className="col-md-4 mb-3"; card.innerHTML=`<div class="card p-3"><h5>Customer: ${t.customer}</h5><p>${t.issue}</p><p>Priority: ${t.priority}</p><p>Status: ${t.status}</p><button class="btn btn-warning btn-sm" onclick="editTicket(${i})">Edit</button> <button class="btn btn-danger btn-sm" onclick="deleteTicket(${i})">Delete</button></div>`; list.appendChild(card); });
+}
+function editTicket(index){ let tickets=JSON.parse(localStorage.getItem("tickets")); let t=tickets[index]; document.getElementById("ticketCustomer").value=t.customer; document.getElementById("ticketIssue").value=t.issue; document.getElementById("ticketPriority").value=t.priority; document.getElementById("ticketStatus").value=t.status; tickets.splice(index,1); localStorage.setItem("tickets",JSON.stringify(tickets)); loadTickets(); }
+function deleteTicket(index){ if(confirm("Delete this ticket?")){ let tickets=JSON.parse(localStorage.getItem("tickets")); tickets.splice(index,1); localStorage.setItem("tickets",JSON.stringify(tickets)); loadTickets(); updateAnalytics(); } }
+
+// ---------------- ANALYTICS ----------------
+function updateAnalytics(){
+  let deals=JSON.parse(localStorage.getItem("deals"))||[];
+  let campaigns=JSON.parse(localStorage.getItem("campaigns"))||[];
+  let tickets=JSON.parse(localStorage.getItem("tickets"))||[];
+  document.getElementById("totalDeals").innerText=deals.length;
+  document.getElementById("totalCampaigns").innerText=campaigns.length;
+  let openTickets=tickets.filter(t=>t.status==="Open").length;
+  document.getElementById("openTickets").innerText=openTickets;
+  createAnalyticsChart(deals,campaigns,tickets);
+}
+function createAnalyticsChart(deals,campaigns,tickets){
+  let ctx=document.getElementById("analyticsChart");
+  if(window.analyticsChart) window.analyticsChart.destroy();
+  window.analyticsChart=new Chart(ctx,{
+    type:"bar",
+    data:{
+      labels:["Deals","Campaigns","Open Tickets"],
+      datasets:[{label:"Count",data:[deals.length,campaigns.length,tickets.filter(t=>t.status==="Open").length],backgroundColor:["blue","orange","green"]}]
+    }
+  });
+}
+
+// ---------------- INTEGRATION ----------------
+function simulateIntegration(app){ alert(app+" integration simulated!"); }
+
+// ---------------- MOBILE ACCESS ----------------
+function toggleMobileView(){
+  mobileMode=!mobileMode;
+  let cList=document.getElementById("mobileCustomerList");
+  let contacts=document.getElementById("mobileContactList");
+  cList.innerHTML=""; contacts.innerHTML="";
+  if(mobileMode){
+    let customers=JSON.parse(localStorage.getItem("customers"))||[];
+    customers.forEach(c=>{cList.innerHTML+=`<p>${c.name} - ${c.notes}</p>`;});
+    let contactsData=JSON.parse(localStorage.getItem("contacts"))||[];
+    contactsData.forEach(c=>{contacts.innerHTML+=`<p>${c.name} - ${c.phone}</p>`;});
+  }
+}
+
+// ---------------- INIT ----------------
+window.onload=function(){
+  let loggedUser=localStorage.getItem("loggedUser");
+  if(loggedUser){
+    document.getElementById("authSection").style.display="none";
+    document.getElementById("crmApp").style.display="block";
+    document.getElementById("loggedUserText").innerText="User: "+loggedUser;
+  }
+  if(localStorage.getItem("darkMode")==="true"){ document.body.classList.add("dark-mode"); }
+  loadCustomers(); loadContacts(); loadDeals(); loadCampaigns(); loadTickets(); updateDashboard(); updateAnalytics();
+}
+</script>
+
+</body>
+</html>
+    
+  </body>
+  
+</html>
